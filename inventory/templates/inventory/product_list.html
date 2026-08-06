@@ -1,0 +1,383 @@
+{% extends "inventory/base.html" %}
+
+{% block title %}Products{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <h2>
+        <i class="fas fa-box"></i>
+        Products
+    </h2>
+
+    <a href="{% url 'inventory:product-add' %}"
+       class="btn btn-primary">
+
+        <i class="fas fa-plus"></i>
+
+        Add Product
+
+    </a>
+
+</div>
+
+<div class="card shadow-sm mb-4">
+
+    <div class="card-body">
+
+        <form method="get">
+
+            <div class="row g-3">
+
+                <div class="col-md-3">
+
+                    <input
+                        type="text"
+                        name="search"
+                        class="form-control"
+                        placeholder="Search by Name or SKU..."
+                        value="{{ request.GET.search }}">
+
+                </div>
+
+                <div class="col-md-2">
+
+                    <select
+                        name="category"
+                        class="form-select">
+
+                        <option value="">All Categories</option>
+
+                        {% for category in categories %}
+
+                        <option
+                            value="{{ category.id }}"
+                            {% if request.GET.category == category.id|stringformat:"s" %}
+                            selected
+                            {% endif %}>
+
+                            {{ category.name }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-2">
+
+                    <select
+                        name="supplier"
+                        class="form-select">
+
+                        <option value="">All Suppliers</option>
+
+                        {% for supplier in suppliers %}
+
+                        <option
+                            value="{{ supplier.id }}"
+                            {% if request.GET.supplier == supplier.id|stringformat:"s" %}
+                            selected
+                            {% endif %}>
+
+                            {{ supplier.name }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-2">
+
+                    <select
+                        name="status"
+                        class="form-select">
+
+                        <option value="">All Status</option>
+
+                        <option value="NORMAL">Normal</option>
+
+                        <option value="LOW">Low</option>
+
+                        <option value="CRITICAL">Critical</option>
+
+                        <option value="OUT">Out</option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3 d-grid">
+
+                    <button
+                        class="btn btn-success">
+
+                        <i class="fas fa-search"></i>
+
+                        Search
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<div class="card shadow-sm">
+
+    <div class="table-responsive">
+
+        <table class="table table-hover align-middle mb-0">
+
+            <thead class="table-dark">
+
+                <tr>
+
+                    <th>Image</th>
+
+                    <th>SKU</th>
+
+                    <th>Product</th>
+
+                    <th>Category</th>
+
+                    <th>Supplier</th>
+
+                    <th>Quantity</th>
+
+                    <th>Status</th>
+
+                    <th>Price</th>
+
+                    <th class="text-center">Actions</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for product in products %}
+
+                <tr>
+
+                    <td>
+
+                        {% if product.image %}
+
+                        <img
+                            src="{{ product.image.url }}"
+                            width="60"
+                            height="60"
+                            class="rounded">
+
+                        {% else %}
+
+                        <span class="text-muted">
+
+                            No Image
+
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        {{ product.sku }}
+
+                    </td>
+
+                    <td>
+
+                        <strong>
+
+                            {{ product.name }}
+
+                        </strong>
+
+                    </td>
+
+                    <td>
+
+                        {{ product.category.name }}
+
+                    </td>
+
+                    <td>
+
+                        {{ product.supplier.name }}
+
+                    </td>
+
+                    <td>
+
+                        {{ product.quantity }}
+
+                    </td>
+
+                    <td>
+
+                        {% if product.status == "NORMAL" %}
+
+                        <span class="badge bg-success">
+
+                            Normal
+
+                        </span>
+
+                        {% elif product.status == "LOW" %}
+
+                        <span class="badge bg-warning text-dark">
+
+                            Low
+
+                        </span>
+
+                        {% elif product.status == "CRITICAL" %}
+
+                        <span class="badge bg-danger">
+
+                            Critical
+
+                        </span>
+
+                        {% else %}
+
+                        <span class="badge bg-dark">
+
+                            Out
+
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        ₦{{ product.selling_price }}
+
+                    </td>
+
+                    <td class="text-center">
+
+                        <a
+                            href="{% url 'inventory:stock-update' product.pk %}"
+                            class="btn btn-sm btn-success">
+
+                            Stock
+
+                        </a>
+
+                        <a
+                            href="{% url 'inventory:product-edit' product.pk %}"
+                            class="btn btn-sm btn-warning">
+
+                            Edit
+
+                        </a>
+
+                        <a
+                            href="{% url 'inventory:product-delete' product.pk %}"
+                            class="btn btn-sm btn-danger">
+
+                            Delete
+
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td
+                        colspan="9"
+                        class="text-center py-5">
+
+                        No products available.
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% if is_paginated %}
+
+<nav class="mt-4">
+
+    <ul class="pagination justify-content-center">
+
+        {% if page_obj.has_previous %}
+
+        <li class="page-item">
+
+            <a
+                class="page-link"
+                href="?page={{ page_obj.previous_page_number }}">
+
+                Previous
+
+            </a>
+
+        </li>
+
+        {% endif %}
+
+        <li class="page-item active">
+
+            <span class="page-link">
+
+                {{ page_obj.number }}
+
+            </span>
+
+        </li>
+
+        {% if page_obj.has_next %}
+
+        <li class="page-item">
+
+            <a
+                class="page-link"
+                href="?page={{ page_obj.next_page_number }}">
+
+                Next
+
+            </a>
+
+        </li>
+
+        {% endif %}
+
+    </ul>
+
+</nav>
+
+{% endif %}
+
+{% endblock %}

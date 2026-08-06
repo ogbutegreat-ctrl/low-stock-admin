@@ -1,0 +1,204 @@
+{% extends "inventory/base.html" %}
+
+{% block title %}Update Stock{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-lg-8">
+
+        <div class="card shadow">
+
+            <div class="card-header bg-success text-white">
+
+                <h4 class="mb-0">
+
+                    <i class="fas fa-warehouse"></i>
+
+                    Update Stock
+
+                </h4>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="alert alert-info">
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+
+                            <strong>Product:</strong>
+
+                            {{ product.name }}
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <strong>SKU:</strong>
+
+                            {{ product.sku }}
+
+                        </div>
+
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+
+                        <div class="col-md-4">
+
+                            <strong>Current Quantity:</strong>
+
+                            <span class="badge bg-primary">
+
+                                {{ product.quantity }}
+
+                            </span>
+
+                        </div>
+
+                        <div class="col-md-4">
+
+                            <strong>Status:</strong>
+
+                            {% if product.status == "NORMAL" %}
+
+                                <span class="badge bg-success">
+
+                                    Normal
+
+                                </span>
+
+                            {% elif product.status == "LOW" %}
+
+                                <span class="badge bg-warning text-dark">
+
+                                    Low
+
+                                </span>
+
+                            {% elif product.status == "CRITICAL" %}
+
+                                <span class="badge bg-danger">
+
+                                    Critical
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-dark">
+
+                                    Out of Stock
+
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+                        <div class="col-md-4">
+
+                            <strong>Suggested Reorder:</strong>
+
+                            <span class="badge bg-info">
+
+                                {{ product.suggested_reorder }}
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <form method="post">
+
+                    {% csrf_token %}
+
+                    {% if form.errors %}
+
+                        <div class="alert alert-danger">
+
+                            Please correct the errors below.
+
+                        </div>
+
+                    {% endif %}
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Transaction Type
+
+                        </label>
+
+                        {{ form.transaction_type }}
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Quantity
+
+                        </label>
+
+                        {{ form.quantity }}
+
+                    </div>
+
+                    <div class="mb-4">
+
+                        <label class="form-label">
+
+                            Reason / Note
+
+                        </label>
+
+                        {{ form.reason }}
+
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+
+                        <a href="{% url 'inventory:products' %}"
+                           class="btn btn-secondary">
+
+                            <i class="fas fa-arrow-left"></i>
+
+                            Back
+
+                        </a>
+
+                        <button
+                            type="submit"
+                            class="btn btn-success">
+
+                            <i class="fas fa-save"></i>
+
+                            Update Stock
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
